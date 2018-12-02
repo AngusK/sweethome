@@ -24,9 +24,6 @@
     #############
     fe = fetch -p
     #############
-[user]
-	email = ak@appier.com
-	name = Angus Kong
 
 [pager]
   diff = diff-so-fancy | less --tabs=1,5 -RFX
