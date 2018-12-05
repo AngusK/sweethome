@@ -8,7 +8,6 @@ BACKUP_EXISTINGFILE=true
 
 
 TIMESTAMP=$(date '+%Y-%m-%d-%H%M%S')
-echo $TIMESTAMP
 function _get_git_file() {
   # $1: git account
   # $2: git repo
@@ -21,14 +20,13 @@ function _get_git_file() {
   if [ -f "${output_path}" ]; then
     echo
     echo "${output_path} already exists!"
-    sleep 0.2
+    sleep 1
     if [ "${BACKUP_EXISTINGFILE}" = false ]; then
       return 0
     fi
-    echo
     echo "Moving ${output_path} to ${output_path}.${TIMESTAMP}"
     echo
-    sleep 0.2
+    sleep 1
     mv ${output_path} ${output_path}.${TIMESTAMP}
     echo "!!!!!!!!!!!!!!"
   fi
