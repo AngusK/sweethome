@@ -1,14 +1,51 @@
 #!/bin/bash
 
+################# Configurations #################
 # Installation path
 USER_BIN_INSTALL_PATH=${HOME}/local/bin
+BACKUP_EXISTINGFILE=true
+################# Configurations End #############
+
+
+TIMESTAMP=$(date '+%Y-%m-%d-%H%M%S')
+echo $TIMESTAMP
+function _get_git_file() {
+  # $1: git account
+  # $2: git repo
+  # $3: file path
+  # $4: output path
+  local acct=$1
+  local repo=$2
+  local fpath=$3
+  local output_path=$4
+  if [ -f "${output_path}" ]; then
+    echo
+    echo "${output_path} already exists!"
+    sleep 0.2
+    if [ "${BACKUP_EXISTINGFILE}" = false ]; then
+      return 0
+    fi
+    echo
+    echo "Moving ${output_path} to ${output_path}.${TIMESTAMP}"
+    echo
+    sleep 0.2
+    mv ${output_path} ${output_path}.${TIMESTAMP}
+    echo "!!!!!!!!!!!!!!"
+  fi
+  curl -L https://github.com/${acct}/${repo}/raw/master/${fpath} \
+    -o ${output_path}
+}
 
 function check_git() {
+  echo "Not implemented yet."
 }
 
 function get_git_completion_bash() {
-  curl -L wget https://github.com/git/git/raw/master/contrib/completion/git-completion.bash \
-    -o ${HOME}/.git-completion.bash
+  _get_git_file \
+    git \
+    git \
+    contrib/completion/git-completion.bash \
+    ${HOME}/.git-completion.bash
 }
 
 function fzf_install() {
@@ -17,9 +54,21 @@ function fzf_install() {
 }
 
 function get_diff_so_fancy() {
-  curl -L https://github.com/so-fancy/diff-so-fancy/raw/master/diff-so-fancy \
-    -o ${USER_BIN_INSTALL_PATH}/diff-so-fancy
+  _get_git_file \
+    so-fancy \
+    diff-so-fancy \
+    diff-so-fancy \
+    ${USER_BIN_INSTALL_PATH}/diff-so-fancy
+}
+
+function get_dircolors() {
+  _get_git_file \
+    seebi \
+    dircolors-solarized \
+    dircolors.ansi-dark \
+    $HOME/.dircolors
 }
 
 function get_bazel() {
+  echo "Not implemented yet."
 }

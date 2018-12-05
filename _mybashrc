@@ -5,7 +5,7 @@ export FZF_DEFAULT_COMMAND='fd --type f'
 
 export PS1='\e[0;32m\H\e[m:\e[33m\]\w\e[0m\]\n\u$ '
 
-alias ls='ls --color=auto'
+alias ls='ls --color=auto -F'
 alias rm='rm -i'
 
 set -o vi
