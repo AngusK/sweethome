@@ -20,12 +20,11 @@ function _get_git_file() {
   local fpath=$3
   local output_path=$4
   if [ -f "${output_path}" ]; then
-    echo
+    echo 
     echo "${output_path} already exists!"
     sleep 1
     if [ "${BACKUP_EXISTINGFILE}" = false ]; then
-      echo 1
-      return
+      return 1
     fi
     echo "Moving ${output_path} to ${output_path}.${TIMESTAMP}"
     echo
@@ -35,7 +34,6 @@ function _get_git_file() {
   fi
   curl -L https://github.com/${acct}/${repo}/raw/master/${fpath} \
     -o ${output_path}
-  echo 0
 }
 
 function check_git() {
