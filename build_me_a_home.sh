@@ -9,6 +9,8 @@ BACKUP_EXISTINGFILE=true
 
 TIMESTAMP=$(date '+%Y-%m-%d-%H%M%S')
 function _get_git_file() {
+  # Echoes "0" if successful, "1" otherwise.
+  #
   # $1: git account
   # $2: git repo
   # $3: file path
@@ -22,7 +24,8 @@ function _get_git_file() {
     echo "${output_path} already exists!"
     sleep 1
     if [ "${BACKUP_EXISTINGFILE}" = false ]; then
-      return 0
+      echo 1
+      return
     fi
     echo "Moving ${output_path} to ${output_path}.${TIMESTAMP}"
     echo
@@ -32,6 +35,7 @@ function _get_git_file() {
   fi
   curl -L https://github.com/${acct}/${repo}/raw/master/${fpath} \
     -o ${output_path}
+  echo 0
 }
 
 function check_git() {
