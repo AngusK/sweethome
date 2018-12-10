@@ -8,6 +8,30 @@ BACKUP_EXISTINGFILE=true
 
 
 TIMESTAMP=$(date '+%Y-%m-%d-%H%M%S')
+
+function _backup_if_exist() {
+  local target_path=$1
+  if [ -f "${target_path}" ]; then
+    echo
+    echo "${target_path} already exists!"
+    sleep 1
+    echo "Moving ${target_path} to ${target_path}.${TIMESTAMP}"
+    echo
+    sleep 1
+    mv ${target_path} ${target_path}.${TIMESTAMP}
+    echo "!!!!!!!!!!!!!!"
+  fi
+}
+
+function _link() {
+  # $1: src file
+  # $2: dest
+  local srcfile=$1
+  local destfile=$2
+  _backup_if_exist ${destfile}
+  ln -s ${srcfile} ${destfile}
+}
+
 function _get_git_file() {
   # Echoes "0" if successful, "1" otherwise.
   #
@@ -19,19 +43,7 @@ function _get_git_file() {
   local repo=$2
   local fpath=$3
   local output_path=$4
-  if [ -f "${output_path}" ]; then
-    echo 
-    echo "${output_path} already exists!"
-    sleep 1
-    if [ "${BACKUP_EXISTINGFILE}" = false ]; then
-      return 1
-    fi
-    echo "Moving ${output_path} to ${output_path}.${TIMESTAMP}"
-    echo
-    sleep 1
-    mv ${output_path} ${output_path}.${TIMESTAMP}
-    echo "!!!!!!!!!!!!!!"
-  fi
+  _backup_if_exist ${output_path}
   curl -L https://github.com/${acct}/${repo}/raw/master/${fpath} \
     -o ${output_path}
 }
@@ -69,6 +81,23 @@ function get_dircolors() {
     $HOME/.dircolors
 }
 
+function get_ack() {
+  curl -L https://beyondgrep.com/ack-2.24-single-file > ${USER_BIN_INSTALL_PATH}/ack && chmod 0755 ${USER_BIN_INSTALL_PATH}/ack
+}
+
 function get_bazel() {
   echo "Not implemented yet."
+}
+
+function build_home() {
+  get_git_completion_bash
+  fzf_install
+  get_diff_so_fancy
+  get_dircolors
+  get_ack
+  . config_git.sh
+
+  _link _tmux.config ~/.tmux.config
+  _link _vimrc ~/.vimrc
+  _link _mybashrc ~/.bashrc
 }
