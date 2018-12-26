@@ -20,6 +20,8 @@ call plug#begin('~/.vim/plugged')
 " FZF
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
+Plug 'nvie/vim-flake8'
+
 call plug#end()
 
 " shiftwidth
