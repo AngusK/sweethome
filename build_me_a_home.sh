@@ -66,11 +66,10 @@ function fzf_install() {
 }
 
 function get_diff_so_fancy() {
-  _get_git_file \
-    so-fancy \
-    diff-so-fancy \
-    diff-so-fancy \
-    ${USER_BIN_INSTALL_PATH}/diff-so-fancy
+  local target_path=${USER_BIN_INSTALL_PATH}/diff-so-fancy
+  curl -L \
+    https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy \
+    > ${target_path} && chmod 0755 ${target_path}
 }
 
 function get_dircolors() {
@@ -90,6 +89,7 @@ function get_bazel() {
 }
 
 function build_home() {
+  mkdir -p ${USER_BIN_INSTALL_PATH}
   get_git_completion_bash
   fzf_install
   get_diff_so_fancy
@@ -97,7 +97,7 @@ function build_home() {
   get_ack
   . config_git.sh
 
-  _link _tmux.config ~/.tmux.config
-  _link _vimrc ~/.vimrc
-  _link _mybashrc ~/.bashrc
+  _link $PWD/_tmux.config ~/.tmux.config
+  _link $PWD/_vimrc ~/.vimrc
+  _link $PWD/_mybashrc ~/.bashrc
 }
