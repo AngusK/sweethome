@@ -97,7 +97,7 @@ function build_home() {
   get_ack
   . config_git.sh
 
-  _link $PWD/_tmux.config ~/.tmux.config
+  _link $PWD/_tmux.conf ~/.tmux.conf
   _link $PWD/_vimrc ~/.vimrc
   _link $PWD/_mybashrc ~/.bashrc
 }
