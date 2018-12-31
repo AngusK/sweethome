@@ -22,6 +22,8 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
 Plug 'nvie/vim-flake8'
 
+Plug 'google/yapf', { 'rtp': 'plugins/vim', 'for': 'python' }
+
 call plug#end()
 
 " shiftwidth
