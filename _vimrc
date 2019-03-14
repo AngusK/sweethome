@@ -32,4 +32,7 @@ set sw=2
 set ts=2
 set expandtab
 
+" The char : should not be counted when search for a whole word.
+set iskeyword-=:
+
 set showcmd
