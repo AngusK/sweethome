@@ -43,6 +43,12 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 
-source ~/.git-completion.bash
-source /usr/local/lib/bazel/bin/bazel-complete.bash
-eval $(dircolors -b $HOME/.dircolors)
+if [ -f ~/.git-completion.bash ]; then
+  source ~/.git-completion.bash
+fi
+if [ -f /usr/local/lib/bazel/bin/bazel-complete.bash ]; then
+  source /usr/local/lib/bazel/bin/bazel-complete.bash
+fi
+if [ -f $HOME/.dircolors ]; then
+  eval $(dircolors -b $HOME/.dircolors)
+fi
