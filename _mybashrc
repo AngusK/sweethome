@@ -1,7 +1,7 @@
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 # For FZF to respect .gitignore, use fd instead of find.
-export FZF_DEFAULT_COMMAND='fd --type f'
+export FZF_DEFAULT_COMMAND='fdfind --type f'
 
 export PS1='\e[0;32m\H\e[m:\e[33m\]\w\e[0m\]\n\u$ '
 

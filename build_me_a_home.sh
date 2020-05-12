@@ -88,9 +88,19 @@ function get_bazel() {
   echo "Not implemented yet."
 }
 
+function get_fdfind() {
+  sudo apt-get install fdfind
+}
+
+function get_locales_data() {
+  sudo apt-get install locales-all
+}
+
 function build_home() {
   mkdir -p ${USER_BIN_INSTALL_PATH}
+  get_locales_data
   get_git_completion_bash
+  get_fdfind
   fzf_install
   get_diff_so_fancy
   get_dircolors
