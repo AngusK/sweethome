@@ -89,15 +89,20 @@ function get_bazel() {
 }
 
 function get_fdfind() {
-  sudo apt-get install fdfind
+  sudo apt-get install fd-find
 }
 
 function get_locales_data() {
   sudo apt-get install locales-all
 }
 
+function get_curl() {
+  sudo apt-get install curl
+}
+
 function build_home() {
   mkdir -p ${USER_BIN_INSTALL_PATH}
+  get_curl
   get_locales_data
   get_git_completion_bash
   get_fdfind
