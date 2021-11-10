@@ -23,13 +23,13 @@ function _backup_if_exist() {
   fi
 }
 
-function _link() {
+function _backup_and_copy() {
   # $1: src file
   # $2: dest
   local srcfile=$1
   local destfile=$2
   _backup_if_exist ${destfile}
-  ln -s ${srcfile} ${destfile}
+  cp ${srcfile} ${destfile}
 }
 
 function _get_git_file() {
@@ -100,6 +100,25 @@ function get_curl() {
   sudo apt-get install curl
 }
 
+function config_git() {
+  git config --global push.default 'simple'
+
+  git config --global core.editor vim
+  git config --global core.whitespace 'fix,-indent-with-non-tab,trailing-space,cr-at-eol'
+  git config --global core.excludesfile '~/.gitignore'
+  git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
+
+  git config --global alias.au 'add --update'
+  git config --global alias.b 'branch -vv'
+  git config --global alias.ba 'branch -vv -a'
+  git config --global alias.ci 'commit'
+  git config --global alias.ca 'commit --amend --no-edit'
+  git config --global alias.co 'checkout'
+  git config --global alias.st 'status'
+  git config --global alias.stb 'status -s -b'
+  git config --global alias.fe 'fetch -p'
+}
+
 function build_home() {
   mkdir -p ${USER_BIN_INSTALL_PATH}
   get_curl
@@ -110,9 +129,9 @@ function build_home() {
   get_diff_so_fancy
   get_dircolors
   get_ack
-  . config_git.sh
+  config_git
 
-  _link $PWD/_tmux.conf ~/.tmux.conf
-  _link $PWD/_vimrc ~/.vimrc
-  _link $PWD/_mybashrc ~/.bashrc
+  _backup_and_copy $PWD/_tmux.conf ~/.tmux.conf
+  _backup_and_copy $PWD/_vimrc ~/.vimrc
+  _backup_and_copy $PWD/_mybashrc ~/.bashrc
 }
