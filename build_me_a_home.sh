@@ -9,17 +9,17 @@ BACKUP_EXISTINGFILE=true
 
 TIMESTAMP=$(date '+%Y-%m-%d-%H%M%S')
 
+function _log_info() {
+  echo "--info:$(date '+%Y%m%d-%H%M%S'):${@:1}"
+}
+
 function _backup_if_exist() {
+  # $1: file to backup if exist
   local target_path=$1
   if [ -f "${target_path}" ]; then
-    echo
-    echo "${target_path} already exists!"
-    sleep 1
-    echo "Moving ${target_path} to ${target_path}.${TIMESTAMP}"
-    echo
-    sleep 1
+    _log_info "${target_path} already exists!"
+    _log_info "Moving ${target_path} to ${target_path}.${TIMESTAMP}"
     mv ${target_path} ${target_path}.${TIMESTAMP}
-    echo "!!!!!!!!!!!!!!"
   fi
 }
 
@@ -49,7 +49,7 @@ function _get_git_file() {
 }
 
 function check_git() {
-  echo "Not implemented yet."
+  _log_info "Not implemented yet."
 }
 
 function get_git_completion_bash() {
@@ -85,7 +85,7 @@ function get_ack() {
 }
 
 function get_bazel() {
-  echo "Not implemented yet."
+  _log_info "Not implemented yet."
 }
 
 function get_fdfind() {
