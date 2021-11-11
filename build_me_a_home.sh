@@ -62,7 +62,8 @@ function get_git_completion_bash() {
 
 function fzf_install() {
   git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-  ~/.fzf/install
+  # --all will enable all options and will not prompt questions.
+  ~/.fzf/install --all
 }
 
 function get_diff_so_fancy() {
