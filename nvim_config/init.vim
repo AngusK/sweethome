@@ -5,16 +5,11 @@ nmap th :tabprev
 nmap tl :tabnext
 nmap tn :tabnew:FZF
 
-" Checking/Install vim-plug for plugin management.
-if empty(glob('$XDG_DATA_HOME/nvim/site/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
+let xdg_data_dir = "~/.local/share"
 
 " Begin a plugin session.
 " Avoid using standard Vim directory names like 'plugin'.
-call plug#begin('$XDG_DATA_HOME/nvim/site/plugged')
+call plug#begin(xdg_data_dir . '/nvim/site/plugged')
 
 " Plugin outside ~/.vim/plugged with post-update hook
 " FZF

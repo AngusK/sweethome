@@ -2,10 +2,11 @@
 
 ################# Configurations #################
 # Installation path
-set -l USER_BIN_INSTALL_PATH $HOME/local/bin
-set -l BACKUP_EXISTINGFILE true
+set USER_BIN_INSTALL_PATH $HOME/local/bin
+set BACKUP_EXISTINGFILE true
 ################# Configurations End #############
 
+set SWEET_HOME_REPO_DIR $PWD
 
 function _log_info
     echo "--info:"(date '+%Y%m%d-%H%M%S')":$argv"
@@ -107,17 +108,22 @@ function config_git
   git config --global alias.fe 'fetch -p'
 end
 
+function install_nvim
+  sudo apt-get install neovim
+end
+
 function setup_nvim
-  _backup_and_copy $PWD/nvim_config $HOME/.config/nvim
+  _backup_and_copy $SWEET_HOME_REPO_DIR/nvim_config $HOME/.config/nvim
   _backup_if_exist $HOME/.local/share/nvim
   curl -fLo $HOME/.local/share/nvim/site/autoload/plug.vim --create-dirs \
-       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   # Execute commands to install plugins.
   nvim /tmp/dummyfile "+:PlugInstall" "+:UpdateRemotePlugins" "+:q!" "+:q!"  
   echo "********************************************"
   echo "* Please install yapf through pip or conda *"
   echo "********************************************"
 end
+
 
 function build_home
   mkdir -p $USER_BIN_INSTALL_PATH
@@ -130,8 +136,9 @@ function build_home
   get_ack
   config_git
 
+  install_nvim
   setup_nvim
-  _backup_and_copy $PWD/_tmux.conf ~/.tmux.conf
-  _backup_and_copy $PWD/_vimrc ~/.vimrc
-  _backup_and_copy $PWD/_mybashrc ~/.bashrc
+  _backup_and_copy $SWEET_HOME_REPO_DIR/_tmux.conf ~/.tmux.conf
+  _backup_and_copy $SWEET_HOME_REPO_DIR/_vimrc ~/.vimrc
+  _backup_and_copy $SWEET_HOME_REPO_DIR/fish_config ~/.config/fish
 end
