@@ -129,7 +129,9 @@ end
 
 function install_bazelisk
   # TODO: add machine type and other os support here.
-  curl -L https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64 -o $USER_BIN_INSTALL_PATH/bazel
+  set BAZELISK_BIN $USER_BIN_INSTALL_PATH/bazel
+  curl -L https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64 -o $BAZELISK_BIN
+  chmod 0755 $BAZELISK_BIN
 end
 
 
