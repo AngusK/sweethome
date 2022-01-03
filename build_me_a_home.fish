@@ -124,6 +124,11 @@ function setup_nvim
   echo "********************************************"
 end
 
+function install_bazelisk
+  # TODO: add machine type and other os support here.
+  curl -L https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64 -o $USER_BIN_INSTALL_PATH/bazel
+end
+
 
 function build_home
   mkdir -p $USER_BIN_INSTALL_PATH
@@ -138,6 +143,8 @@ function build_home
 
   install_nvim
   setup_nvim
+  install_bazelisk
+
   _backup_and_copy $SWEET_HOME_REPO_DIR/_tmux.conf ~/.tmux.conf
   _backup_and_copy $SWEET_HOME_REPO_DIR/_vimrc ~/.vimrc
   _backup_and_copy $SWEET_HOME_REPO_DIR/fish_config ~/.config/fish
