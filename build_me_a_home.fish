@@ -6,7 +6,10 @@ set USER_BIN_INSTALL_PATH $HOME/local/bin
 set BACKUP_EXISTINGFILE true
 ################# Configurations End #############
 
-set SWEET_HOME_REPO_DIR $PWD
+set SWEET_HOME_REPO_DIR (dirname (status --current-filename))
+# if the directory is "not/from/the/root" by checking the leading '/' char,
+# apppend the prefix by pwd: "/from/root/xxxxxx"
+if not string match -r '^/' $SWEET_HOME_REPO_DIR > /dev/null; set SWEET_HOME_REPO_DIR (pwd)/$SWEET_HOME_REPO_DIR; end
 
 function _log_info
     echo "--info:"(date '+%Y%m%d-%H%M%S')":$argv"
