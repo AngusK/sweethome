@@ -15,7 +15,7 @@ call plug#begin(xdg_data_dir . '/nvim/site/plugged')
 " FZF
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
-plug 'google/vim-maktaba'
+Plug 'google/vim-maktaba'
 Plug 'google/vim-codefmt'
 " Also add Glaive, which is used to configure codefmt's maktaba flags. See
 " `:help :Glaive` for usage.
