@@ -26,13 +26,12 @@ exec --no-startup-id waybar
 exec --no-startup-id dex --autostart --environment i3
 
 # swayidle for screen lock and dpms on/off.
-# timeout 3 $swaylock \
-# set $swaylock 'swaylock -c 111111 -l -e'
 exec swayidle -w \
-  timeout 900 'swaylock -c 111111 -l -e' \
+  timeout 900 swaylock \
 	timeout 1200 'swaymsg "output * dpms off"' \
 	resume 'swaymsg "output * dpms on"' \
-  before-sleep 'swaylock -c 111111 -l -e'
+  lock swaylock \
+  before-sleep swaylock
 
 exec --no-startup-id ibus-daemon -rxdR
 
