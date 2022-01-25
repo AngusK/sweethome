@@ -1,0 +1,6 @@
+timeout 300 swaylock
+timeout 360 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"'
+timeout 600 'systemctl suspend' resume 'swaymsg "output * dpms on"'
+lock swaylock
+# always lock before sleep so if the session is suspended by the user, it's locked when woken up.
+before-sleep swaylock
