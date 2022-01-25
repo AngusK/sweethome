@@ -1,0 +1,6 @@
+daemonize
+color=220022
+indicator-caps-lock
+ignore-empty-password
+show-failed-attempts
+image=$XDG_DATA_HOME/my-images/lock_screen.png

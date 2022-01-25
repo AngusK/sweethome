@@ -15,39 +15,32 @@ set $mod Mod4
 # is used in the bar {} block below.
 font pango:monospace 16
 
-exec --no-startup-id waybar
-
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
 #font pango:DejaVu Sans Mono 8
 
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
-exec --no-startup-id dex --autostart --environment i3
+exec dex --autostart --environment i3
 
 # swayidle for screen lock and dpms on/off.
-# timeout 3 $swaylock \
-# set $swaylock 'swaylock -c 111111 -l -e'
-exec swayidle -w \
-  timeout 900 'swaylock -c 111111 -l -e' \
-	timeout 1200 'swaymsg "output * dpms off"' \
-	resume 'swaymsg "output * dpms on"' \
-  before-sleep 'swaylock -c 111111 -l -e'
+exec swayidle -w
 
-exec --no-startup-id ibus-daemon -rxdR
+exec ibus-daemon -rxdR
 
-bindsym XF86PowerOff exec --no-startup-id systemctl suspend
-bindsym $mod+Print exec --no-startup-id grimshot save active
+bindsym XF86PowerOff exec systemctl suspend
+bindsym $mod+Escape exec systemctl suspend
+bindsym $mod+Print exec grimshot save active
 
 # Use pactl to adjust volume in PulseAudio.
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10%
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10%
-bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
-bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
+bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +10%
+bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -10%
+bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
 
 # brightnessctl for backlight
-bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set 5%+
-bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
+bindsym XF86MonBrightnessUp exec brightnessctl set 5%+
+bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
 
 # Use Mouse+$mod to d
 floating_modifier $mod
@@ -59,7 +52,7 @@ bindsym $mod+Return exec foot
 bindsym $mod+Shift+q kill
 
 # A more modern dmenu (a program launcher)  replacement is wofi:
-bindsym $mod+d exec --no-startup-id wofi --show drun
+bindsym $mod+d exec wofi --show drun
 
 # change focus
 bindsym $mod+h focus left
@@ -148,11 +141,19 @@ bindsym $mod+Shift+8 move container to workspace number $ws8
 bindsym $mod+Shift+9 move container to workspace number $ws9
 bindsym $mod+Shift+0 move container to workspace number $ws10
 
+# move current workspace to a different output (e.g. monitor)
+bindsym $mod+Ctrl+Shift+h move workspace to left
+bindsym $mod+Ctrl+Shift+j move workspace to down
+bindsym $mod+Ctrl+Shift+k move workspace to up
+bindsym $mod+Ctrl+Shift+l move workspace to right
+
 # reload the configuration file
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym $mod+Shift+r restart
-# exit i3 (logs you out of your X session)
+# This is not available in Wayland yet. Only for i3.
+# bindsym $mod+Shift+r restart
+
+# exit (logs you out of your X session)
 bindsym $mod+Shift+e exec "swaymsg `echo 'nop\nexit' | wofi -p 'Exit Sway (logout X session)?' -L 2 --show dmenu`"
 
 # resize window (you can also use the mouse for that)
@@ -182,11 +183,12 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
-# Start i3bar to display a workspace bar (plus the system information i3status
+# Start bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
-#bar {
-#        status_command i3status
-#}
+bar {
+        position top
+        swaybar_command waybar
+}
 
 input type:keyboard {
         repeat_delay 250
