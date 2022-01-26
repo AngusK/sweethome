@@ -1,4 +1,4 @@
-#!/bin/fish
+#!/usr/bin/fish
 
 function _install_font_awesome
   sudo apt-get install fonts-font-awesome
