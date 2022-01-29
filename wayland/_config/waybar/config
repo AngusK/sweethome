@@ -6,7 +6,7 @@
     "font-family": "Roboto, FontAwesome",
     "modules-left": ["sway/workspaces", "sway/mode"],
     "modules-center": ["sway/window"],
-    "modules-right": ["idle_inhibitor", "pulseaudio", "backlight", "cpu", "memory", "temperature", "network", "battery", "clock"],
+    "modules-right": ["idle_inhibitor", "pulseaudio", "backlight", "cpu", "memory", "temperature", "network", "battery", "sway/language", "tray", "clock"],
     // Modules configuration
     "sway/workspaces": {
         "disable-scroll": true,
