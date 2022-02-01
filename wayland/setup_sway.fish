@@ -20,11 +20,16 @@ function _install_pulseaudio_utils
   sudo apt-get install pulseaudio-utils
 end
 
+function _install_mako
+  sudo apt-get install mako_notifier
+end
+
 function build_wayland_env
   _install_font_awesome
   _install_brightness_ctl
   _install_sway_related_packages
   _install_grim_packages
   _install_pulseaudio_utils
+  _install_mako
 
 end
