@@ -1,0 +1,11 @@
+max-visible=4
+layer=overlay
+font=monospace 14
+text-color=#aabbaa
+background-color=#114488
+border-color=#554499
+border-size=4
+border-radius=5
+width=300
+height=300
+default-timeout=3000
