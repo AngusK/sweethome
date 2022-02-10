@@ -142,7 +142,7 @@ bindsym $mod+Ctrl+Shift+k move workspace to up
 bindsym $mod+Ctrl+Shift+l move workspace to right
 
 # reload the configuration file
-bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r reload
 
 # exit (logs you out of your X session)
 bindsym $mod+Shift+e exec "swaymsg `echo 'nop\nexit' | wofi -p 'Exit Sway (logout X session)?' -L 2 --show dmenu`"
@@ -179,7 +179,7 @@ exec mako
 # swayidle for screen lock and dpms on/off.
 exec swayidle -w
 
-exec ibus-daemon -rxdR
+exec fcitx5 -dr
 
 bar {
         position top
