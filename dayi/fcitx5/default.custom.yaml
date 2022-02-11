@@ -1,0 +1,4 @@
+patch:
+  schema_list:
+    - {schema: dayi4}
+    - {schema: luna_pinyin}
