@@ -1,0 +1,42 @@
+patch:
+  menu:
+    alternative_select_keys: " '[]-="
+    page_size: 6
+  punctuator:
+    full_shape:
+      - {"<": {commit: "，"}}
+      - {">": {commit: "。"}}
+    half_shape:
+      - {"<": {commit: "，"}}
+      - {">": {commit: "。"}}
+  schema:
+    # Must match the schema file name. Ex: "dayi4.schema.yaml" -> "schema_id: dayi4"
+    schema_id: dayi4
+    # This name will show up in the IME menu.
+    name: 大易四碼
+    # Version. It's a string instead of numbers like "2.15.14"
+    version: "20220204"
+    author:
+      - Angus Kong
+    description: |
+      大易四碼輸入法
+    dependencies:
+      - luna_pinyin #第二個輸入法-注音.繁體
+  translator:
+    # Dictionary name: "dayi4.dict.yaml" -> "dictionary: dayi4"
+    dictionary: dayi4
+    spelling_hints: 3	# ～字以內候選標註完整帶調拼音
+    enable_user_dict: false	#是否開啓用戶詞典〔用戶詞典記錄動態字詞頻、用戶詞〕是true否false
+    enable_sentence: false	#是否開啓自動造 句●，是true否false (自動造詞時有太極圖)會加入第一選詞
+    enable_encoder: false	#是否開啓自動造 詞●，是true否false
+    enable_charset_filter: false	#是否開啓字符集過濾，是true否false
+    encode_commit_history: false	#是否對已上屛詞自動成詞，是true否false
+    max_phrase_length: 3	#最大 自動 成詞 詞長
+  reverse_lookup:	#反查
+    dictionary: luna_pinyin	#反查之輸入法名稱(注音.繁體)
+    enable_completion: true
+    prefix: "~"	#前綴標識，可不塡，不塡則無前綴
+    suffix: "'"	#尾綴標識，可不塡，不塡則無尾綴
+    tips: 〔注音〕	#前提示符，可不塡，不塡則無提示符
+    preedit_format:	#menu反查之輸入法 顯示
+      - "xlit|,./0123456789;ABCDEFGHIJKLMNOPQRSTUVWXYZ|力點竹金言牛目四王門田米足虫人馬七日一土手鳥木月立女雨魚口耳石工革糸艸禾山水火心|"
