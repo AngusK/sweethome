@@ -1,6 +1,6 @@
-timeout 300 swaylock
-timeout 360 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"'
-timeout 600 'systemctl suspend' resume 'swaymsg "output * dpms on"'
-lock swaylock
+timeout 300 'echo timeout 1; swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"'
+timeout 360 'echo timeout 2; loginctl lock-session $XDG_SESSION_ID'
+timeout 600 'echo timeout 3; systemctl suspend'
+lock 'swaylock'
 # always lock before sleep so if the session is suspended by the user, it's locked when woken up.
-before-sleep swaylock
+before-sleep 'loginctl lock-session $XDG_SESSION_ID'
