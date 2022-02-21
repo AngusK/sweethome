@@ -24,7 +24,7 @@ exec hash dbus-update-activation-environment 2>/dev/null && \
 
 bindsym XF86PowerOff exec systemctl suspend
 bindsym $mod+Escape exec systemctl suspend
-bindsym $mod+Print exec grimshot save active
+bindsym $mod+Print exec 'pinta `grimshot save active`'
 
 # Use pactl to adjust volume in PulseAudio.
 bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +10%
