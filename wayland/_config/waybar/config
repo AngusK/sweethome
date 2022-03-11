@@ -21,7 +21,7 @@
             "urgent": "",
             "focused": "",
             "default": ""
-        }
+        },
     },
     "sway/mode": {
         "format": "<span style=\"italic\">{}</span>"
@@ -35,6 +35,7 @@
     },
     "clock": {
         // "timezone": "America/New_York",
+        "interval": 30,
         "format": "{:%H:%M, %b %d, %Y}",
         "format-alt": "{:%Y-%m-%d %H:%M}"
     },
