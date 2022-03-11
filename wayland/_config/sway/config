@@ -40,7 +40,7 @@ bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec foot
+bindsym $mod+Return exec foot /usr/bin/fish
 
 # kill focused window
 bindsym $mod+Shift+q kill
