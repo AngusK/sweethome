@@ -9,3 +9,5 @@ border-radius=5
 width=300
 height=300
 default-timeout=3000
+ignore-timeout=1
+
