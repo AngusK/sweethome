@@ -111,6 +111,8 @@ set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
 
+bindsym $mod+tab workspace back_and_forth
+
 # switch to workspace
 bindsym $mod+1 workspace number $ws1
 bindsym $mod+2 workspace number $ws2
@@ -179,7 +181,7 @@ exec mako
 # swayidle for screen lock and dpms on/off.
 exec swayidle -w
 
-exec fcitx5 -dr
+exec_always fcitx5 -dr
 
 bar {
         position top
