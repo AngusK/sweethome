@@ -3,10 +3,13 @@
     // "position": "bottom", // Waybar position (top|bottom|left|right)
     "height": 35, // Waybar height (to be removed for auto height)
     "spacing": 2, // Gaps between modules
-    "font-family": "Roboto, FontAwesome",
+
+    "font-family": "FontAwesome, Roboto, Helvetica",
+
     "modules-left": ["sway/workspaces", "sway/mode"],
     "modules-center": ["sway/window"],
     "modules-right": ["idle_inhibitor", "pulseaudio", "backlight", "cpu", "memory", "temperature", "network", "battery", "sway/language", "tray", "clock"],
+
     // Modules configuration
     "sway/workspaces": {
         "disable-scroll": true,
@@ -34,10 +37,10 @@
         }
     },
     "clock": {
-        // "timezone": "America/New_York",
         "interval": 30,
+        "timezone": "Asia/Singapore",
         "format": "{:%H:%M, %b %d, %Y}",
-        "format-alt": "{:%Y-%m-%d %H:%M}"
+        "format-alt": "{:%Y-%m-%d %H:%M}",
     },
     "cpu": {
         "format": "{usage}% ",
