@@ -112,19 +112,17 @@ function config_git
 end
 
 function install_nvim
+  sudo add-apt-repository ppa:neovim-ppa/unstable
+  sudo apt update
   sudo apt-get install neovim
 end
 
 function setup_nvim
   _backup_and_copy $SWEET_HOME_REPO_DIR/nvim_config $HOME/.config/nvim
   _backup_if_exist $HOME/.local/share/nvim
-  curl -fLo $HOME/.local/share/nvim/site/autoload/plug.vim --create-dirs \
-       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  # Execute commands to install plugins.
-  nvim /tmp/dummyfile "+:PlugInstall" "+:UpdateRemotePlugins" "+:q!" "+:q!"  
-  echo "********************************************"
-  echo "* Please install yapf through pip or conda *"
-  echo "********************************************"
+  #echo "********************************************"
+  #echo "* Please install yapf through pip or conda *"
+  #echo "********************************************"
 end
 
 function install_bazelisk
