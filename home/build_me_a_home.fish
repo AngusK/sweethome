@@ -135,7 +135,7 @@ function install_bazelisk
 end
 
 function install_fundamental_package
-  apt install software-properties-common
+  sudo apt install software-properties-common
 end
 
 
