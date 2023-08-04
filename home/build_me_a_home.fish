@@ -121,8 +121,10 @@ function setup_nvim
   _backup_and_copy $SWEET_HOME_REPO_DIR/nvim_config $HOME/.config/nvim
   _backup_if_exist $HOME/.local/share/nvim
   #echo "********************************************"
-  #echo "* Please install yapf through pip or conda *"
-  #echo "********************************************"
+  #echo "Please install yapf, pyright, and stylua:
+  #echo ">pip install yapf
+  #echo ">pip install pyright
+  #echo ">cargo install stylua
 end
 
 function install_bazelisk
@@ -132,9 +134,14 @@ function install_bazelisk
   chmod 0755 $BAZELISK_BIN
 end
 
+function install_fundamental_package
+  apt install software-properties-common
+end
+
 
 function build_home
   mkdir -p $USER_BIN_INSTALL_PATH
+  install_fundamental_package
   get_curl
   get_locales_data
   get_fdfind
