@@ -28,6 +28,9 @@ require("lazy").setup({
   end
 },
 { "neovim/nvim-lspconfig" },
+{ "jose-elias-alvarez/null-ls.nvim",
+  dependencies = { "nvim-lua/plenary.nvim" },
+},
 })
 
 -- Setting Ctrl-P to open fzf window
@@ -35,6 +38,16 @@ vim.keymap.set("n", "<c-P>",
   "<cmd>lua require('fzf-lua').files()<CR>", { silent = true })
 vim.keymap.set("n", "<c-P>",
   "<cmd>lua require('fzf-lua').files()<CR>", { silent = true })
+
+local null_ls = require("null-ls")
+null_ls.setup({
+  sources = {
+    null_ls.builtins.diagnostics.buildifier,
+    null_ls.builtins.formatting.buildifier,
+    null_ls.builtins.formatting.yapf,
+    null_ls.builtins.formatting.lua_format,
+  },
+})
 
 -- Pyright config by lspconfig
 require("lspconfig").pyright.setup{}
@@ -60,7 +73,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
     vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
     vim.keymap.set('n', '<space>f', function()
-      vim.lsp.buf.format { async = true }
+      vim.lsp.buf.format({ async = true })
     end, opts)
   end,
 })
