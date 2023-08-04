@@ -57,10 +57,9 @@ function fzf_install
 end
 
 function get_diff_so_fancy
-  set -l target_path $USER_BIN_INSTALL_PATH/diff-so-fancy
-  curl -L \
-    https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy \
-    > $target_path && chmod 0755 $target_path
+    sudo add-apt-repository ppa:aos1/diff-so-fancy
+    sudo apt update
+    sudo apt install diff-so-fancy
 end
 
 function get_dircolors
@@ -135,7 +134,7 @@ function install_bazelisk
 end
 
 function install_fundamental_package
-  sudo apt install software-properties-common
+  apt install software-properties-common
 end
 
 
