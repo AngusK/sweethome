@@ -134,12 +134,23 @@ function install_bazelisk
 end
 
 function install_fundamental_package
-  apt install software-properties-common
+  sudo apt install software-properties-common
+end
+
+function install_git
+  sudo apt install git
+end
+
+function install_tmux
+  sudo apt install tmux
 end
 
 
 function build_home
   mkdir -p $USER_BIN_INSTALL_PATH
+  sudo apt update
+  sudo upgrade
+
   install_fundamental_package
   get_curl
   get_locales_data
@@ -148,7 +159,9 @@ function build_home
   get_diff_so_fancy
   get_dircolors
   get_ack
+  install_git
   config_git
+  install_tmux
 
   install_nvim
   setup_nvim
