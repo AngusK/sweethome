@@ -1,6 +1,6 @@
 vim.keymap.set("n", "th", "<cmd>tabprev<CR>")
 vim.keymap.set("n", "tl", "<cmd>tabnext<CR>")
-vim.keymap.set("n", "tn", "<cmd>tabnew<CR>")
+vim.keymap.set("n", "tn", "<cmd>tabnew|lua require('fzf-lua').files()<CR>")
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -34,15 +34,18 @@ require("lazy").setup({
 })
 
 -- Setting Ctrl-P to open fzf window
-vim.keymap.set("n", "<c-P>",
+--vim.keymap.set("n", "<c-P>",
+vim.keymap.set("n", "fz",
   "<cmd>lua require('fzf-lua').files()<CR>", { silent = true })
+vim.keymap.set("n", "ft",
+  "<cmd>lua require('fzf-lua').tab()<CR>", { silent = true })
 
 local null_ls = require("null-ls")
 null_ls.setup({
   sources = {
     null_ls.builtins.diagnostics.buildifier,
     null_ls.builtins.formatting.buildifier,
-    null_ls.builtins.formatting.yapf,
+    null_ls.builtins.formatting.black,
     null_ls.builtins.formatting.lua_format,
   },
 })
