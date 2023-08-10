@@ -36,8 +36,6 @@ require("lazy").setup({
 -- Setting Ctrl-P to open fzf window
 vim.keymap.set("n", "<c-P>",
   "<cmd>lua require('fzf-lua').files()<CR>", { silent = true })
-vim.keymap.set("n", "<c-P>",
-  "<cmd>lua require('fzf-lua').files()<CR>", { silent = true })
 
 local null_ls = require("null-ls")
 null_ls.setup({
