@@ -179,7 +179,12 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
+# For notification
 exec mako
+# For bluetooth
+exec blueman-applet
+# For authenticaiton agent
+exec /usr/bin/lxpolkit
 
 # swayidle for screen lock and dpms on/off.
 exec swayidle -w
