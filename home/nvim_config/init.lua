@@ -53,7 +53,7 @@ null_ls.setup({
     null_ls.builtins.diagnostics.buildifier,
     null_ls.builtins.formatting.buildifier,
     null_ls.builtins.formatting.black,
-    null_ls.builtins.formatting.lua_format,
+    null_ls.builtins.formatting.stylua,
   },
 })
 
