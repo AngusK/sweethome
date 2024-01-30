@@ -4,6 +4,8 @@ vim.keymap.set("n", "tn", "<cmd>tabnew|lua require('fzf-lua').files()<CR>")
 
 vim.opt.number = true
 vim.opt.signcolumn = "number"
+vim.opt.expandtab = true
+-- vim.opt.loaded_perl_provider = false
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -35,6 +37,11 @@ require("lazy").setup({
 { "jose-elias-alvarez/null-ls.nvim",
   dependencies = { "nvim-lua/plenary.nvim" },
 },
+{
+  "pmizio/typescript-tools.nvim",
+  dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+  opts = {},
+},
 })
 
 -- Setting Ctrl-P to open fzf window
@@ -52,7 +59,6 @@ null_ls.setup({
   sources = {
     null_ls.builtins.diagnostics.buildifier,
     null_ls.builtins.formatting.buildifier,
-    null_ls.builtins.formatting.black,
     null_ls.builtins.formatting.stylua,
   },
 })
