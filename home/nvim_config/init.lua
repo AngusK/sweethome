@@ -2,10 +2,14 @@ vim.keymap.set("n", "th", "<cmd>tabprev<CR>")
 vim.keymap.set("n", "tl", "<cmd>tabnext<CR>")
 vim.keymap.set("n", "tn", "<cmd>tabnew|lua require('fzf-lua').files()<CR>")
 
+-- optionally enable 24-bit colour
+vim.opt.termguicolors = true
+
 vim.opt.number = true
 vim.opt.signcolumn = "number"
 vim.opt.expandtab = true
--- vim.opt.loaded_perl_provider = false
+vim.g['loaded_perl_provider'] = 0
+vim.g['loaded_ruby_provider'] = 0
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -22,6 +26,11 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Lazy loading other plugins.
 require("lazy").setup({
+{ "nvim-tree/nvim-tree.lua",
+  config = function()
+    require("nvim-tree").setup()
+  end
+},
 { "junegunn/fzf", build = "./install --bin" },
 {
   "ibhagwan/fzf-lua",
@@ -64,7 +73,10 @@ null_ls.setup({
 })
 
 -- Pyright config by lspconfig
-require("lspconfig").pyright.setup{}
+local lspconfig = require("lspconfig")
+lspconfig.pyright.setup{}
+lspconfig.tsserver.setup{}
+lspconfig.bzl.setup{}
 vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
