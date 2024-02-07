@@ -6,8 +6,11 @@ vim.keymap.set("n", "tn", "<cmd>tabnew|lua require('fzf-lua').files()<CR>")
 vim.opt.termguicolors = true
 
 vim.opt.number = true
+-- Use spaces instead of tabs for indentation.
 vim.opt.signcolumn = "number"
 vim.opt.expandtab = true
+-- This is to prevent double status bars.
+vim.opt.showmode = false
 vim.g['loaded_perl_provider'] = 0
 vim.g['loaded_ruby_provider'] = 0
 
