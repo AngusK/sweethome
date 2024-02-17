@@ -1,6 +1,12 @@
+-- disable netrw at the very start
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+-- key mapping for quick tab switching.
 vim.keymap.set("n", "th", "<cmd>tabprev<CR>")
 vim.keymap.set("n", "tl", "<cmd>tabnext<CR>")
 vim.keymap.set("n", "tn", "<cmd>tabnew|lua require('fzf-lua').files()<CR>")
+vim.keymap.set("n", "<space>t", "<cmd>lua require('nvim-tree.api').tree.toggle({find_file=true})<CR>")
 
 -- optionally enable 24-bit colour
 vim.opt.termguicolors = true
