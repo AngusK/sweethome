@@ -36,6 +36,7 @@ vim.opt.rtp:prepend(lazypath)
 -- Lazy loading other plugins.
 require("lazy").setup({
 {"nvim-treesitter/nvim-treesitter", build = ":TSUpdate"},
+{"nvim-tree/nvim-web-devicons"},
 { "nvim-tree/nvim-tree.lua",
   config = function()
     require("nvim-tree").setup()
