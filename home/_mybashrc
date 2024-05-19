@@ -12,33 +12,6 @@ alias rm='rm -i'
 
 set -o vi
 
-function fix_focus() {
-  # this fixes the weird bug on mac that each focus change will create a input signal to terminals.
-  printf "\e[?1004l"
-}
-
-function docc() {
-  # abbrev. of "docker container"
-  docker container $*
-}
-
-function doci() {
-  # abbrev. of "docker image"
-  docker image $*
-}
-
-function tls() {
-  tmux list-session
-}
-
-function tattach() {
-  local sess="0"
-  if [[ "$1" != "" ]]; then
-    sess="$1"
-  fi
-  tmux attach-session -t ${sess}
-}
-
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
