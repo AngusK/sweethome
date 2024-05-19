@@ -304,3 +304,8 @@ vim.api.nvim_exec([[
   augroup END
 ]], false)
 
+
+-- neovide configuration
+vim.g.neovide_cursor_animate_command_line = true
+vim.g.neovide_cursor_vfx_mode = "railgun"
+vim.g.neovide_cursor_vfx_particle_lifetime = 3.0
