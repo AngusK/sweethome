@@ -1,4 +1,4 @@
-#!/bin/fish
+#!/usr/bin/fish
 
 ################# Configurations #################
 # Installation path
