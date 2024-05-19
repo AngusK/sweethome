@@ -1,20 +1,11 @@
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
-# For FZF to respect .gitignore, use fd instead of find.
-export FZF_DEFAULT_COMMAND='fdfind --type f'
-
 export PS1='\e[0;32m\H\e[m:\e[33m\]\w\e[0m\]\n\u$ '
-
-export PATH="${HOME}/local/bin:${PATH}"
 
 alias ls='ls --color=auto -F'
 alias rm='rm -i'
 
 set -o vi
-
-export LC_ALL=en_US.UTF-8
-export LANG=en_US.UTF-8
-export LANGUAGE=en_US.UTF-8
 
 if [ -f ~/.git-completion.bash ]; then
   source ~/.git-completion.bash
