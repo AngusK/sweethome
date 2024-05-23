@@ -7,6 +7,9 @@ vim.keymap.set("n", "th", "<cmd>tabprev<CR>")
 vim.keymap.set("n", "tl", "<cmd>tabnext<CR>")
 vim.keymap.set("n", "tn", "<cmd>tabnew|lua require('fzf-lua').files()<CR>")
 vim.keymap.set("n", "<space>t", "<cmd>lua require('nvim-tree.api').tree.toggle({find_file=true})<CR>")
+vim.keymap.set("n", "<space>+", "<cmd>lua vim.g.neovide_scale_factor=vim.g.neovide_scale_factor+0.2<CR>")
+vim.keymap.set("n", "<space>-", "<cmd>lua vim.g.neovide_scale_factor=vim.g.neovide_scale_factor-0.2<CR>")
+vim.keymap.set("n", "<space>0", "<cmd>lua vim.g.neovide_scale_factor=1.0<CR>")
 
 -- optionally enable 24-bit colour
 vim.opt.termguicolors = true
@@ -102,8 +105,16 @@ require("lazy").setup({
       end,
     })
   end,
+},
+{
+  "folke/tokyonight.nvim",
+  lazy = false,
+  priority = 1000,
+  opts = {},
 }
 })
+vim.cmd[[colorscheme tokyonight-night]]
+
 
 -- Configuring treesitter
 require("nvim-treesitter.configs").setup({
