@@ -2,21 +2,12 @@
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
--- key mapping for quick tab switching.
-vim.keymap.set("n", "th", "<cmd>tabprev<CR>")
-vim.keymap.set("n", "tl", "<cmd>tabnext<CR>")
-vim.keymap.set("n", "tn", "<cmd>tabnew|lua require('fzf-lua').files()<CR>")
-vim.keymap.set("n", "<space>t", "<cmd>lua require('nvim-tree.api').tree.toggle({find_file=true})<CR>")
-vim.keymap.set("n", "<space>+", "<cmd>lua vim.g.neovide_scale_factor=vim.g.neovide_scale_factor+0.2<CR>")
-vim.keymap.set("n", "<space>-", "<cmd>lua vim.g.neovide_scale_factor=vim.g.neovide_scale_factor-0.2<CR>")
-vim.keymap.set("n", "<space>0", "<cmd>lua vim.g.neovide_scale_factor=1.0<CR>")
-
 -- optionally enable 24-bit colour
 vim.opt.termguicolors = true
 
 vim.opt.number = true
 -- Use spaces instead of tabs for indentation.
-vim.opt.signcolumn = "number"
+vim.opt.signcolumn = "yes"
 vim.opt.expandtab = true
 -- This is to prevent double status bars.
 vim.opt.showmode = false
@@ -52,21 +43,61 @@ require("lazy").setup({
     require("nvim-tree").setup()
   end
 },
-{ "junegunn/fzf", build = "./install --bin" },
+-- { "junegunn/fzf", build = "./install --bin" },
+-- {
+--  "ibhagwan/fzf-lua",
+--   -- optional for icon support
+--   dependencies = { "nvim-tree/nvim-web-devicons" },
+--   config = function()
+--     -- calling `setup` is optional for customization
+--     require("fzf-lua").setup({})
+--   end
+-- },
+{'akinsho/toggleterm.nvim', version = "*", config = true},
+{ "nvim-telescope/telescope.nvim", tag = "0.1.6",
+  dependencies = { "nvim-lua/plenary.nvim" }
+},
 {
-  "ibhagwan/fzf-lua",
-  -- optional for icon support
-  dependencies = { "nvim-tree/nvim-web-devicons" },
-  config = function()
-    -- calling `setup` is optional for customization
-    require("fzf-lua").setup({})
-  end
+  "lewis6991/gitsigns.nvim",
+  opts = {
+    signs = {
+      add = { text = "▎" },
+      change = { text = "▎" },
+      delete = { text = "" },
+      topdelete = { text = "" },
+      changedelete = { text = "▎" },
+      untracked = { text = "▎" },
+    },
+    on_attach = function(buffer)
+      local gs = package.loaded.gitsigns
+
+      local function map(mode, l, r, desc)
+        vim.keymap.set(mode, l, r, { buffer = buffer, desc = desc })
+      end
+
+      -- stylua: ignore start
+      map("n", "]h", function() gs.nav_hunk("next") end, "Next Hunk")
+      map("n", "[h", function() gs.nav_hunk("prev") end, "Prev Hunk")
+      map("n", "]H", function() gs.nav_hunk("last") end, "Last Hunk")
+      map("n", "[H", function() gs.nav_hunk("first") end, "First Hunk")
+      map({ "n", "v" }, "<leader>ghs", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
+      map({ "n", "v" }, "<leader>ghr", ":Gitsigns reset_hunk<CR>", "Reset Hunk")
+      map("n", "<leader>ghS", gs.stage_buffer, "Stage Buffer")
+      map("n", "<leader>ghu", gs.undo_stage_hunk, "Undo Stage Hunk")
+      map("n", "<leader>ghR", gs.reset_buffer, "Reset Buffer")
+      map("n", "<leader>ghp", gs.preview_hunk_inline, "Preview Hunk Inline")
+      map("n", "<leader>ghb", function() gs.blame_line({ full = true }) end, "Blame Line")
+      map("n", "<leader>ghd", gs.diffthis, "Diff This")
+      map("n", "<leader>ghD", function() gs.diffthis("~") end, "Diff This ~")
+      map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
+    end,
+  },
 },
 { "tpope/vim-fugitive" },
 { "neovim/nvim-lspconfig" },
-{ "jose-elias-alvarez/null-ls.nvim",
-  dependencies = { "nvim-lua/plenary.nvim" },
-},
+--{ "jose-elias-alvarez/null-ls.nvim",
+--  dependencies = { "nvim-lua/plenary.nvim" },
+--},
 {
   "pmizio/typescript-tools.nvim",
   dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
@@ -115,6 +146,39 @@ require("lazy").setup({
 })
 vim.cmd[[colorscheme tokyonight-night]]
 
+-- Set up the floating terminal
+local Terminal  = require('toggleterm.terminal').Terminal
+local fish_term = Terminal:new({
+  cmd = "fish",
+  direction = "float",
+  float_opts = {
+    border = "double",
+  },
+})
+
+function _fish_term_toggle()
+  fish_term:toggle()
+end
+
+
+local builtin = require("telescope.builtin")
+vim.g.mapleader = " "
+vim.keymap.set("n", "th", "<cmd>tabprev<CR>")
+vim.keymap.set("n", "tl", "<cmd>tabnext<CR>")
+-- vim.keymap.set("n", "tn", "<cmd>tabnew|lua require('fzf-lua').files()<CR>")
+vim.keymap.set("n", "tn", "<cmd>tabnew|lua require('telescope.builtin').find_files()<CR>")
+vim.keymap.set("n", "<leader>t", "<cmd>lua require('nvim-tree.api').tree.toggle({find_file=true})<CR>")
+vim.keymap.set("n", "<c-P>", builtin.find_files, {})
+vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
+vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
+vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
+vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
+vim.keymap.set("n", "<leader>m", "<cmd>lua _fish_term_toggle()<CR>", {noremap = true, silent = true})
+
+vim.keymap.set("n", "<leader>+", "<cmd>lua vim.g.neovide_scale_factor=vim.g.neovide_scale_factor+0.2<CR>")
+vim.keymap.set("n", "<leader>-", "<cmd>lua vim.g.neovide_scale_factor=vim.g.neovide_scale_factor-0.2<CR>")
+vim.keymap.set("n", "<leader>0", "<cmd>lua vim.g.neovide_scale_factor=1.0<CR>")
+
 
 -- Configuring treesitter
 require("nvim-treesitter.configs").setup({
@@ -159,34 +223,25 @@ require("nvim-treesitter.configs").setup({
   },
 })
 
--- Setting Ctrl-P to open fzf window
-vim.keymap.set("n", "fz",
-  "<cmd>lua require('fzf-lua').files()<CR>", { silent = true })
-vim.keymap.set("n", "<c-P>",
-  "<cmd>lua require('fzf-lua').files()<CR>", { silent = true })
-vim.keymap.set("n", "ft",
-  "<cmd>lua require('fzf-lua').tabs()<CR>", { silent = true })
-vim.keymap.set("n", "fb",
-  "<cmd>lua require('fzf-lua').buffers()<CR>", { silent = true })
 
-local null_ls = require("null-ls")
-null_ls.setup({
-  sources = {
-    null_ls.builtins.diagnostics.buildifier,
-    null_ls.builtins.formatting.buildifier,
-    null_ls.builtins.formatting.stylua,
-  },
-})
+--local null_ls = require("null-ls")
+--null_ls.setup({
+--  sources = {
+--    null_ls.builtins.diagnostics.buildifier,
+--    null_ls.builtins.formatting.buildifier,
+--    null_ls.builtins.formatting.stylua,
+--  },
+--})
 
 -- Pyright config by lspconfig
 local lspconfig = require("lspconfig")
 lspconfig.pyright.setup{}
 lspconfig.tsserver.setup{}
 lspconfig.bzl.setup{}
-vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
+vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
-vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist)
+vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist)
 -- Use LspAttach autocommand to only map the following keys
 -- after the language server attaches to the current buffer
 vim.api.nvim_create_autocmd('LspAttach', {
@@ -203,8 +258,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
     vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
     vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
-    vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
-    vim.keymap.set('n', '<space>f', function()
+    vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, opts)
+    vim.keymap.set('n', '<leader>f', function()
       vim.lsp.buf.format({ async = true })
     end, opts)
   end,
