@@ -168,7 +168,11 @@ function build_home
   setup_nvim
   install_bazelisk
 
+  _backup_and_copy $SWEET_HOME_REPO_DIR/_mybashrc ~/.bashrc
+  _backup_and_copy $SWEET_HOME_REPO_DIR/_myprofile ~/.profile
   _backup_and_copy $SWEET_HOME_REPO_DIR/_tmux.conf ~/.tmux.conf
   _backup_and_copy $SWEET_HOME_REPO_DIR/_vimrc ~/.vimrc
   _backup_and_copy $SWEET_HOME_REPO_DIR/fish_config ~/.config/fish
+
+  echo "Done.
 end
