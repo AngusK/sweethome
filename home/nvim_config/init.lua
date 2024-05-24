@@ -151,15 +151,6 @@ require("lazy").setup({
 }
 })
 
--- Activate nvim-navic by attaching it to lsp.
-local navic = require("nvim-navic")
-
-require("lspconfig").clangd.setup {
-    on_attach = function(client, bufnr)
-        navic.attach(client, bufnr)
-    end
-}
-
 vim.cmd[[colorscheme tokyonight-night]]
 
 -- Set up the floating terminal
@@ -250,10 +241,27 @@ require("nvim-treesitter.configs").setup({
 --})
 
 -- Pyright config by lspconfig
+-- Activate nvim-navic by attaching it to lsp.
+local navic = require("nvim-navic")
+local on_attach = function(client, bufnr)
+    if client.server_capabilities.documentSymbolProvider then
+        navic.attach(client, bufnr)
+    end
+end
+
 local lspconfig = require("lspconfig")
-lspconfig.pyright.setup{}
-lspconfig.tsserver.setup{}
-lspconfig.bzl.setup{}
+lspconfig.pyright.setup{
+    on_attach = on_attach
+}
+lspconfig.clangd.setup {
+    on_attach = on_attach
+}
+lspconfig.tsserver.setup{
+    on_attach = on_attach
+}
+lspconfig.bzl.setup{
+    on_attach = on_attach
+}
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
