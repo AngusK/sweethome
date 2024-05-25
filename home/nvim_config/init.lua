@@ -98,9 +98,9 @@ require("lazy").setup({
   "SmiteshP/nvim-navic",
   dependencies = { "neovim/nvim-lspconfig" },
 },
---{ "jose-elias-alvarez/null-ls.nvim",
---  dependencies = { "nvim-lua/plenary.nvim" },
---},
+{ "jose-elias-alvarez/null-ls.nvim",
+  dependencies = { "nvim-lua/plenary.nvim" },
+},
 {
   "pmizio/typescript-tools.nvim",
   dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
@@ -231,14 +231,14 @@ require("nvim-treesitter.configs").setup({
 })
 
 
---local null_ls = require("null-ls")
---null_ls.setup({
---  sources = {
---    null_ls.builtins.diagnostics.buildifier,
---    null_ls.builtins.formatting.buildifier,
---    null_ls.builtins.formatting.stylua,
---  },
---})
+local null_ls = require("null-ls")
+null_ls.setup({
+  sources = {
+    null_ls.builtins.diagnostics.buildifier,
+    null_ls.builtins.formatting.buildifier,
+    null_ls.builtins.formatting.yapf,
+  },
+})
 
 -- Pyright config by lspconfig
 -- Activate nvim-navic by attaching it to lsp.
