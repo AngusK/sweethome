@@ -167,6 +167,14 @@ function _fish_term_toggle()
   fish_term:toggle()
 end
 
+function _G.set_terminal_keymaps()
+  local opts = {buffer = 0}
+  vim.keymap.set('t', '<C-w>', [[<C-\><C-n><C-w>]], opts)
+end
+
+-- if you only want these mappings for toggle term use term://*toggleterm#* instead
+vim.cmd('autocmd! TermOpen term://*toggleterm#* lua set_terminal_keymaps()')
+
 
 local builtin = require("telescope.builtin")
 vim.g.mapleader = " "
@@ -182,9 +190,9 @@ vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
 vim.keymap.set("n", "<leader>m", "<cmd>lua _fish_term_toggle()<CR>", {noremap = true, silent = true})
 
-vim.keymap.set("n", "<leader>+", "<cmd>lua vim.g.neovide_scale_factor=vim.g.neovide_scale_factor+0.2<CR>")
-vim.keymap.set("n", "<leader>-", "<cmd>lua vim.g.neovide_scale_factor=vim.g.neovide_scale_factor-0.2<CR>")
-vim.keymap.set("n", "<leader>0", "<cmd>lua vim.g.neovide_scale_factor=1.0<CR>")
+vim.keymap.set("n", "<leader>=", "<cmd>lua vim.g.neovide_scale_factor=vim.g.neovide_scale_factor+0.2<CR>redraw!<CR>")
+vim.keymap.set("n", "<leader>-", "<cmd>lua vim.g.neovide_scale_factor=vim.g.neovide_scale_factor-0.2<CR>redraw!<CR>")
+vim.keymap.set("n", "<leader>0", "<cmd>lua vim.g.neovide_scale_factor=1.0<CR>redraw!<CR>")
 
 
 -- Configuring treesitter
