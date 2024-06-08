@@ -87,6 +87,10 @@ function get_locales_data
   sudo apt-get install locales-all
 end
 
+function install_cmake
+  sudo apt-get install cmake
+end
+
 function get_curl
   sudo apt-get install curl
 end
@@ -155,6 +159,7 @@ function build_home
   install_fundamental_package
   get_curl
   get_locales_data
+  install_cmake
   get_fdfind
   fzf_install
   get_diff_so_fancy
