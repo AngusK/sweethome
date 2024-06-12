@@ -179,5 +179,5 @@ function build_home
   _backup_and_copy $SWEET_HOME_REPO_DIR/_vimrc ~/.vimrc
   _backup_and_copy $SWEET_HOME_REPO_DIR/fish_config ~/.config/fish
 
-  echo "Done.
+  echo "Done."
 end
