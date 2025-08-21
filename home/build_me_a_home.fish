@@ -171,7 +171,6 @@ function build_home
 
   install_nvim
   setup_nvim
-  install_bazelisk
 
   _backup_and_copy $SWEET_HOME_REPO_DIR/_mybashrc ~/.bashrc
   _backup_and_copy $SWEET_HOME_REPO_DIR/_myprofile ~/.profile
