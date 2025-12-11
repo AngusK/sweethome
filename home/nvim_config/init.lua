@@ -96,16 +96,41 @@ require("lazy").setup({
 { "tpope/vim-fugitive" },
 { "neovim/nvim-lspconfig" },
 {
-  "SmiteshP/nvim-navic",
-  dependencies = { "neovim/nvim-lspconfig" },
-},
-{ "jose-elias-alvarez/null-ls.nvim",
-  dependencies = { "nvim-lua/plenary.nvim" },
+    "mason-org/mason.nvim",
+    opts = {}
 },
 {
-  "pmizio/typescript-tools.nvim",
-  dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
-  opts = {},
+    "mason-org/mason-lspconfig.nvim",
+    opts = {},
+    dependencies = {
+        { "mason-org/mason.nvim", opts = {} },
+        "neovim/nvim-lspconfig",
+    },
+},
+{
+    "SmiteshP/nvim-navic",
+    dependencies = { "neovim/nvim-lspconfig" },
+},
+{
+    "jose-elias-alvarez/null-ls.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+},
+{
+    "pmizio/typescript-tools.nvim",
+    dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+    opts = {},
+},
+{
+    'hrsh7th/nvim-cmp',
+},
+{
+    'hrsh7th/cmp-buffer',
+},
+{
+    'hrsh7th/cmp-nvim-lsp',
+    dependencies = {
+        "neovim/nvim-lspconfig",
+    },
 },
 {
   -- "numiras/semshi",
@@ -253,15 +278,6 @@ require("nvim-treesitter.configs").setup({
 })
 
 
-local null_ls = require("null-ls")
-null_ls.setup({
-  sources = {
-    null_ls.builtins.diagnostics.buildifier,
-    null_ls.builtins.formatting.buildifier,
-    null_ls.builtins.formatting.yapf,
-  },
-})
-
 -- Pyright config by lspconfig
 -- Activate nvim-navic by attaching it to lsp.
 local navic = require("nvim-navic")
@@ -272,18 +288,96 @@ local on_attach = function(client, bufnr)
 end
 
 local lspconfig = require("lspconfig")
-lspconfig.pyright.setup{
-    on_attach = on_attach
+
+require("mason-lspconfig").setup {
+  ensure_installed = { "clangd", "ts_ls" },
+  automatic_enable = false
 }
-lspconfig.clangd.setup {
-    on_attach = on_attach
-}
-lspconfig.ts_ls.setup{
-    on_attach = on_attach
-}
-lspconfig.bzl.setup{
-    on_attach = on_attach
-}
+
+-- autocomplete config start
+local cmp = require('cmp')
+cmp.setup({
+  snippet = {
+--    -- REQUIRED - you must specify a snippet engine
+    expand = function(args)
+      vim.snippet.expand(args.body) -- For native neovim snippets (Neovim v0.10+)
+--[[      vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+      -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+      -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
+      -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+
+      -- For `mini.snippets` users:
+      -- local insert = MiniSnippets.config.expand.insert or MiniSnippets.default_insert
+      -- insert({ body = args.body }) -- Insert at cursor
+      -- cmp.resubscribe({ "TextChangedI", "TextChangedP" })
+      -- require("cmp.config").set_onetime({ sources = {} })  ]]--
+    end,
+  },
+  window = {
+    completion = cmp.config.window.bordered(),
+    -- documentation = cmp.config.window.bordered(),
+  },
+  mapping = cmp.mapping.preset.insert({
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+  }),
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+    -- { name = 'vsnip' }, -- For vsnip users.
+    -- { name = 'luasnip' }, -- For luasnip users.
+    -- { name = 'ultisnips' }, -- For ultisnips users.
+    -- { name = 'snippy' }, -- For snippy users.
+  }, {
+    { name = 'buffer' },
+  })
+})
+
+-- To use git you need to install the plugin petertriho/cmp-git and uncomment lines below
+-- Set configuration for specific filetype.
+--[[ cmp.setup.filetype('gitcommit', {
+  sources = cmp.config.sources({
+    { name = 'git' },
+  }, {
+    { name = 'buffer' },
+  })
+)
+equire("cmp_git").setup() ]]--
+
+-- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline({ '/', '?' }, {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = {
+    { name = 'buffer' }
+  }
+})
+
+-- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline(':', {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = cmp.config.sources({
+    { name = 'path' }
+  }, {
+    { name = 'cmdline' }
+  }),
+  matching = { disallow_symbol_nonprefix_matching = false }
+})
+
+-- Set up lspconfig.
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+vim.lsp.config('pyrefly', {
+  cmd = { 'uv', 'run', 'pyrefly', 'lsp' },
+  capabilities = capabilities,
+  root_markers = {'.git', 'uv.lock'}
+})
+vim.lsp.enable('pyrefly')
+
+-- autocomplete config end.
+
+
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
