@@ -6,12 +6,34 @@ vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
 
 vim.opt.number = true
--- Use spaces instead of tabs for indentation.
 vim.opt.signcolumn = "yes"
-vim.opt.expandtab = true
 -- This is to prevent double status bars.
 vim.g['loaded_perl_provider'] = 0
 vim.g['loaded_ruby_provider'] = 0
+
+
+-- Use spaces instead of tabs for indentation.
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.softtabstop = 2
+vim.opt.expandtab = true
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "javascript", "typescript", "typescriptreact", "javascriptreact", "css", "html" },
+  callback = function()
+    vim.opt_local.tabstop = 2
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.softtabstop = 2
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "python",
+  callback = function()
+    vim.opt_local.tabstop = 4
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.softtabstop = 4
+  end,
+})
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
