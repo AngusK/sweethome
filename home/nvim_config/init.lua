@@ -50,31 +50,39 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Lazy loading other plugins.
 require("lazy").setup({
-{ 'nvim-telescope/telescope-fzf-native.nvim', build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' },
 {
   "nvim-treesitter/nvim-treesitter",
-  opts = function(_, opts)
-    if type(opts.ensure_installed) == "table" then
-      vim.list_extend(opts.ensure_installed, { "ninja", "python", "rst", "toml" })
-    end
+  build = ":TSUpdate",
+  opts = {
+    ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "ninja", "python", "rst", "toml" },
+    sync_install = false,
+    auto_install = true,
+    ignore_install = { "javascript" },
+    highlight = {
+      enable = true,
+      -- Disable for large files (>100KB)
+      disable = function(lang, buf)
+        local max_filesize = 100 * 1024
+        local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+        if ok and stats and stats.size > max_filesize then
+          return true
+        end
+      end,
+      additional_vim_regex_highlighting = false,
+    },
+  },
+  config = function(_, opts)
+    require("nvim-treesitter").setup(opts)
   end,
 },
+{ 'nvim-telescope/telescope-fzf-native.nvim', build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' },
 {"nvim-tree/nvim-web-devicons"},
-{ "nvim-tree/nvim-tree.lua",
-  config = function()
-    require("nvim-tree").setup()
-  end
+-- FIX: nvim-tree was missing from spec but used in keymaps
+{
+  "nvim-tree/nvim-tree.lua",
+  dependencies = { "nvim-tree/nvim-web-devicons" },
+  opts = {},
 },
--- { "junegunn/fzf", build = "./install --bin" },
--- {
---  "ibhagwan/fzf-lua",
---   -- optional for icon support
---   dependencies = { "nvim-tree/nvim-web-devicons" },
---   config = function()
---     -- calling `setup` is optional for customization
---     require("fzf-lua").setup({})
---   end
--- },
 {'akinsho/toggleterm.nvim', version = "*", config = true},
 { "nvim-telescope/telescope.nvim", tag = "0.1.6",
   dependencies = { "nvim-lua/plenary.nvim" }
@@ -85,8 +93,8 @@ require("lazy").setup({
     signs = {
       add = { text = "▎" },
       change = { text = "▎" },
-      delete = { text = "" },
-      topdelete = { text = "" },
+      delete = { text = "" },
+      topdelete = { text = "" },
       changedelete = { text = "▎" },
       untracked = { text = "▎" },
     },
@@ -118,24 +126,33 @@ require("lazy").setup({
 { "tpope/vim-fugitive" },
 { "neovim/nvim-lspconfig" },
 {
-    "mason-org/mason.nvim",
-    opts = {}
-},
-{
-    "mason-org/mason-lspconfig.nvim",
-    opts = {},
-    dependencies = {
-        { "mason-org/mason.nvim", opts = {} },
-        "neovim/nvim-lspconfig",
-    },
-},
-{
     "SmiteshP/nvim-navic",
     dependencies = { "neovim/nvim-lspconfig" },
 },
+-- Formatting
 {
-    "jose-elias-alvarez/null-ls.nvim",
-    dependencies = { "nvim-lua/plenary.nvim" },
+  "stevearc/conform.nvim",
+  opts = {
+    formatters_by_ft = {
+      python = { "black" },
+      lua = { "stylua" },
+      javascript = { "prettier" },
+    },
+    -- FIX: lsp_fallback is deprecated, replaced with lsp_format
+    format_on_save = { timeout_ms = 500, lsp_format = "fallback" },
+  },
+},
+-- Linting
+{
+  "mfussenegger/nvim-lint",
+  config = function()
+    require("lint").linters_by_ft = {
+      python = { "flake8" },
+    }
+    vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+      callback = function() require("lint").try_lint() end,
+    })
+  end,
 },
 {
     "pmizio/typescript-tools.nvim",
@@ -154,8 +171,11 @@ require("lazy").setup({
         "neovim/nvim-lspconfig",
     },
 },
+-- FIX: cmp-path was missing but used in cmdline setup
 {
-  -- "numiras/semshi",
+    'hrsh7th/cmp-path',
+},
+{
   "wookayin/semshi", -- use a maintained fork
   ft = "python",
   build = ":UpdateRemotePlugins",
@@ -170,17 +190,6 @@ require("lazy").setup({
     vim.api.nvim_create_autocmd({ "VimEnter", "ColorScheme" }, {
       group = vim.api.nvim_create_augroup("SemanticHighlight", {}),
       callback = function()
-        -- Only add style, inherit or link to the LSP's colors
-            -- highlight! link semshiGlobal  @none
-            -- highlight! link semshiImported @none
-            -- highlight! link semshiParameter @lsp.type.parameter
-            -- --- highlight! link semshiBuiltin @function.builtin
-            -- highlight! link semshiAttribute @field
-            -- highlight! link semshiSelf @lsp.type.selfKeyword
-            -- highlight! link semshiUnresolved @none
-            -- highlight! link semshiFree @none
-            -- highlight! link semshiAttribute @none
-            -- highlight! link semshiParameterUnused @none
         vim.cmd([[
             highlight! link semshiBuiltin @function.builtin
             ]])
@@ -241,7 +250,6 @@ local builtin = require("telescope.builtin")
 vim.g.mapleader = " "
 vim.keymap.set("n", "th", "<cmd>tabprev<CR>")
 vim.keymap.set("n", "tl", "<cmd>tabnext<CR>")
--- vim.keymap.set("n", "tn", "<cmd>tabnew|lua require('fzf-lua').files()<CR>")
 vim.keymap.set("n", "tn", "<cmd>tabnew|lua require('telescope.builtin').find_files()<CR>")
 vim.keymap.set("n", "<leader>t", "<cmd>lua require('nvim-tree.api').tree.toggle({find_file=true})<CR>")
 vim.keymap.set("n", "<c-P>", builtin.find_files, {})
@@ -255,52 +263,6 @@ vim.keymap.set("n", "<leader>=", "<cmd>lua vim.g.neovide_scale_factor=vim.g.neov
 vim.keymap.set("n", "<leader>-", "<cmd>lua vim.g.neovide_scale_factor=vim.g.neovide_scale_factor-0.2<CR>redraw!<CR>")
 vim.keymap.set("n", "<leader>0", "<cmd>lua vim.g.neovide_scale_factor=1.0<CR>redraw!<CR>")
 
-
--- Configuring treesitter
-require("nvim-treesitter.configs").setup({
-  -- A list of parser names, or "all" (the five listed parsers should always be installed)
-  ensure_installed = { "c", "lua", "vim", "vimdoc", "query" },
-
-  -- Install parsers synchronously (only applied to `ensure_installed`)
-  sync_install = false,
-
-  -- Automatically install missing parsers when entering buffer
-  -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
-  auto_install = true,
-
-  -- List of parsers to ignore installing (or "all")
-  ignore_install = { "javascript" },
-
-  ---- If you need to change the installation directory of the parsers (see -> Advanced Setup)
-  -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
-
-  highlight = {
-    enable = true,
-
-    -- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
-    -- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
-    -- the name of the parser)
-    -- list of language that will be disabled
-    disable = { "c", "rust" },
-    -- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
-    disable = function(lang, buf)
-        local max_filesize = 100 * 1024 -- 100 KB
-        local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
-        if ok and stats and stats.size > max_filesize then
-            return true
-        end
-    end,
-
-    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-    -- Using this option may slow down your editor, and you may see some duplicate highlights.
-    -- Instead of true it can also be a list of languages
-    additional_vim_regex_highlighting = false,
-  },
-})
-
-
--- Pyright config by lspconfig
 -- Activate nvim-navic by attaching it to lsp.
 local navic = require("nvim-navic")
 local on_attach = function(client, bufnr)
@@ -309,66 +271,32 @@ local on_attach = function(client, bufnr)
     end
 end
 
-local lspconfig = require("lspconfig")
-
-require("mason-lspconfig").setup {
-  ensure_installed = { "clangd", "ts_ls" },
-  automatic_enable = false
-}
-
 -- autocomplete config start
 local cmp = require('cmp')
 cmp.setup({
   snippet = {
---    -- REQUIRED - you must specify a snippet engine
     expand = function(args)
       vim.snippet.expand(args.body) -- For native neovim snippets (Neovim v0.10+)
---[[      vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-      -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-      -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
-      -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
-
-      -- For `mini.snippets` users:
-      -- local insert = MiniSnippets.config.expand.insert or MiniSnippets.default_insert
-      -- insert({ body = args.body }) -- Insert at cursor
-      -- cmp.resubscribe({ "TextChangedI", "TextChangedP" })
-      -- require("cmp.config").set_onetime({ sources = {} })  ]]--
     end,
   },
   window = {
     completion = cmp.config.window.bordered(),
-    -- documentation = cmp.config.window.bordered(),
   },
   mapping = cmp.mapping.preset.insert({
     ['<C-b>'] = cmp.mapping.scroll_docs(-4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
     ['<C-Space>'] = cmp.mapping.complete(),
     ['<C-e>'] = cmp.mapping.abort(),
-    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+    ['<CR>'] = cmp.mapping.confirm({ select = true }),
   }),
   sources = cmp.config.sources({
     { name = 'nvim_lsp' },
-    -- { name = 'vsnip' }, -- For vsnip users.
-    -- { name = 'luasnip' }, -- For luasnip users.
-    -- { name = 'ultisnips' }, -- For ultisnips users.
-    -- { name = 'snippy' }, -- For snippy users.
   }, {
     { name = 'buffer' },
   })
 })
 
--- To use git you need to install the plugin petertriho/cmp-git and uncomment lines below
--- Set configuration for specific filetype.
---[[ cmp.setup.filetype('gitcommit', {
-  sources = cmp.config.sources({
-    { name = 'git' },
-  }, {
-    { name = 'buffer' },
-  })
-)
-equire("cmp_git").setup() ]]--
-
--- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
+-- Use buffer source for `/` and `?`
 cmp.setup.cmdline({ '/', '?' }, {
   mapping = cmp.mapping.preset.cmdline(),
   sources = {
@@ -376,7 +304,7 @@ cmp.setup.cmdline({ '/', '?' }, {
   }
 })
 
--- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+-- Use cmdline & path source for ':'
 cmp.setup.cmdline(':', {
   mapping = cmp.mapping.preset.cmdline(),
   sources = cmp.config.sources({
@@ -393,6 +321,8 @@ local capabilities = require('cmp_nvim_lsp').default_capabilities()
 vim.lsp.config('pyrefly', {
   cmd = { 'uv', 'run', 'pyrefly', 'lsp' },
   capabilities = capabilities,
+  -- FIX: wire on_attach so navic gets attached
+  on_attach = on_attach,
   root_markers = {'.git', 'uv.lock'}
 })
 vim.lsp.enable('pyrefly')
@@ -404,16 +334,11 @@ vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist)
--- Use LspAttach autocommand to only map the following keys
--- after the language server attaches to the current buffer
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('UserLspConfig', {}),
   callback = function(ev)
-    -- Enable completion triggered by <c-x><c-o>
     vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
-    -- Buffer local mappings.
-    -- See `:help vim.lsp.*` for documentation on any of the below functions
     local opts = { buffer = ev.buf }
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
@@ -452,17 +377,11 @@ local colors = {
 require("heirline").load_colors(colors)
 
 local ViMode = {
-    -- get vim current mode, this information will be required by the provider
-    -- and the highlight functions, so we compute it only once per component
-    -- evaluation and store it as a component attribute
     init = function(self)
         self.mode = vim.fn.mode(1) -- :h mode()
     end,
-    -- Now we define some dictionaries to map the output of mode() to the
-    -- corresponding string and color. We can put these into `static` to compute
-    -- them at initialisation time.
     static = {
-        mode_names = { -- change the strings if you like it vvvvverbose!
+        mode_names = {
             n = "N",
             no = "N?",
             nov = "N?",
@@ -514,23 +433,13 @@ local ViMode = {
             t =  "red",
         }
     },
-    -- We can now access the value of mode() that, by now, would have been
-    -- computed by `init()` and use it to index our strings dictionary.
-    -- note how `static` fields become just regular attributes once the
-    -- component is instantiated.
-    -- To be extra meticulous, we can also add some vim statusline syntax to
-    -- control the padding and make sure our string is always at least 2
-    -- characters long. Plus a nice Icon.
     provider = function(self)
-        return " %2("..self.mode_names[self.mode].."%)"
+        return " %2("..self.mode_names[self.mode].."%)"
     end,
-    -- Same goes for the highlight. Now the foreground will change according to the current mode.
     hl = function(self)
         local mode = self.mode:sub(1, 1) -- get only the first mode character
         return { fg = self.mode_colors[mode], bold = true, }
     end,
-    -- Re-evaluate the component only on ModeChanged event!
-    -- Also allows the statusline to be re-evaluated when entering operator-pending mode
     update = {
         "ModeChanged",
         pattern = "*:*",
@@ -541,12 +450,10 @@ local ViMode = {
 }
 
 local FileNameBlock = {
-    -- let's first set up some attributes needed by this component and its children
     init = function(self)
         self.filename = vim.api.nvim_buf_get_name(0)
     end,
 }
--- We can now define some children separately and add them later
 
 local FileIcon = {
     init = function(self)
@@ -564,13 +471,8 @@ local FileIcon = {
 
 local FileName = {
     provider = function(self)
-        -- first, trim the pattern relative to the current directory. For other
-        -- options, see :h filename-modifers
         local filename = vim.fn.fnamemodify(self.filename, ":.")
         if filename == "" then return "[No Name]" end
-        -- now, if the filename would occupy more than 1/4th of the available
-        -- space, we trim the file path to its initials
-        -- See Flexible Components section below for dynamic truncation
         if not conditions.width_percent_below(#filename, 0.25) then
             filename = vim.fn.pathshorten(filename)
         end
@@ -591,31 +493,24 @@ local FileFlags = {
         condition = function()
             return not vim.bo.modifiable or vim.bo.readonly
         end,
-        provider = "",
+        provider = "",
         hl = { fg = "orange" },
     },
 }
 
--- Now, let's say that we want the filename color to change if the buffer is
--- modified. Of course, we could do that directly using the FileName.hl field,
--- but we'll see how easy it is to alter existing components using a "modifier"
--- component
-
 local FileNameModifer = {
     hl = function()
         if vim.bo.modified then
-            -- use `force` because we need to override the child's hl foreground
             return { fg = "cyan", bold = true, force=true }
         end
     end,
 }
 
--- let's add the children to our FileNameBlock component
 FileNameBlock = utils.insert(FileNameBlock,
     FileIcon,
-    utils.insert(FileNameModifer, FileName), -- a new table where FileName is a child of FileNameModifier
+    utils.insert(FileNameModifer, FileName),
     FileFlags,
-    { provider = '%<'} -- this means that the statusline is cut here when there's not enough space
+    { provider = '%<'}
 )
 
 local FileType = {
@@ -625,57 +520,13 @@ local FileType = {
     hl = { fg = utils.get_highlight("Type").fg, bold = true },
 }
 
-local FileEncoding = {
-    provider = function()
-        local enc = (vim.bo.fenc ~= '' and vim.bo.fenc) or vim.o.enc -- :h 'enc'
-        return enc ~= 'utf-8' and enc:upper()
-    end
-}
-
-local FileFormat = {
-    provider = function()
-        local fmt = vim.bo.fileformat
-        return fmt ~= 'unix' and fmt:upper()
-    end
-}
-
-local FileSize = {
-    provider = function()
-        -- stackoverflow, compute human readable file size
-        local suffix = { 'b', 'k', 'M', 'G', 'T', 'P', 'E' }
-        local fsize = vim.fn.getfsize(vim.api.nvim_buf_get_name(0))
-        fsize = (fsize < 0 and 0) or fsize
-        if fsize < 1024 then
-            return fsize..suffix[1]
-        end
-        local i = math.floor((math.log(fsize) / math.log(1024)))
-        return string.format("%.2g%s", fsize / math.pow(1024, i), suffix[i + 1])
-    end
-}
-
-local FileLastModified = {
-    -- did you know? Vim is full of functions!
-    provider = function()
-        local ftime = vim.fn.getftime(vim.api.nvim_buf_get_name(0))
-        return (ftime > 0) and os.date("%c", ftime)
-    end
-}
-
--- We're getting minimalist here!
 local Ruler = {
-    -- %l = current line number
-    -- %L = number of lines in the buffer
-    -- %c = column number
-    -- %P = percentage through file of displayed window
     provider = "%7(%l/%3L%):%2c %P",
 }
 
--- I take no credits for this! 🦁
 local ScrollBar ={
     static = {
         sbar = { '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█' }
-        -- Another variant, because the more choice the better.
-        -- sbar = { '🭶', '🭷', '🭸', '🭹', '🭺', '🭻' }
     },
     provider = function(self)
         local curr_line = vim.api.nvim_win_get_cursor(0)[1]
@@ -689,24 +540,17 @@ local ScrollBar ={
 local LSPActive = {
     condition = conditions.lsp_attached,
     update = {'LspAttach', 'LspDetach'},
-
-    -- You can keep it simple,
-    -- provider = " [LSP]",
-
-    -- Or complicate things a bit and get the servers names
     provider = function()
         local names = {}
-        for i, server in pairs(vim.lsp.get_active_clients({ bufnr = 0 })) do
+        -- FIX: get_active_clients is deprecated, use get_clients
+        for i, server in pairs(vim.lsp.get_clients({ bufnr = 0 })) do
             table.insert(names, server.name)
         end
-        return " [" .. table.concat(names, " ") .. "]"
+        return " [" .. table.concat(names, " ") .. "]"
     end,
     hl = { fg = "green", bold = true },
 }
 
--- Awesome plugin
-
--- The easy way.
 local Navic = {
     condition = function() return require("nvim-navic").is_available() end,
     provider = function()
@@ -714,102 +558,6 @@ local Navic = {
     end,
     update = 'CursorMoved'
 }
-
--- Full nerd (with icon colors and clickable elements)!
--- works in multi window, but does not support flexible components (yet ...)
---local Navic = {
---    condition = function() return require("nvim-navic").is_available() end,
---    static = {
---        -- create a type highlight map
---        type_hl = {
---            File = "Directory",
---            Module = "@include",
---            Namespace = "@namespace",
---            Package = "@include",
---            Class = "@structure",
---            Method = "@method",
---            Property = "@property",
---            Field = "@field",
---            Constructor = "@constructor",
---            Enum = "@field",
---            Interface = "@type",
---            Function = "@function",
---            Variable = "@variable",
---            Constant = "@constant",
---            String = "@string",
---            Number = "@number",
---            Boolean = "@boolean",
---            Array = "@field",
---            Object = "@type",
---            Key = "@keyword",
---            Null = "@comment",
---            EnumMember = "@field",
---            Struct = "@structure",
---            Event = "@keyword",
---            Operator = "@operator",
---            TypeParameter = "@type",
---        },
---        -- bit operation dark magic, see below...
---        enc = function(line, col, winnr)
---            return bit.bor(bit.lshift(line, 16), bit.lshift(col, 6), winnr)
---        end,
---        -- line: 16 bit (65535); col: 10 bit (1023); winnr: 6 bit (63)
---        dec = function(c)
---            local line = bit.rshift(c, 16)
---            local col = bit.band(bit.rshift(c, 6), 1023)
---            local winnr = bit.band(c, 63)
---            return line, col, winnr
---        end
---    },
---    init = function(self)
---        local data = require("nvim-navic").get_data() or {}
---        local children = {}
---        -- create a child for each level
---        for i, d in ipairs(data) do
---            -- encode line and column numbers into a single integer
---            local pos = self.enc(d.scope.start.line, d.scope.start.character, self.winnr)
---            local child = {
---                {
---                    provider = d.icon,
---                    hl = self.type_hl[d.type],
---                },
---                {
---                    -- escape `%`s (elixir) and buggy default separators
---                    provider = d.name:gsub("%%", "%%%%"):gsub("%s*->%s*", ''),
---                    -- highlight icon only or location name as well
---                    -- hl = self.type_hl[d.type],
---
---                    on_click = {
---                        -- pass the encoded position through minwid
---                        minwid = pos,
---                        callback = function(_, minwid)
---                            -- decode
---                            local line, col, winnr = self.dec(minwid)
---                            vim.api.nvim_win_set_cursor(vim.fn.win_getid(winnr), {line, col})
---                        end,
---                        name = "heirline_navic",
---                    },
---                },
---            }
---            -- add a separator only if needed
---            if #data > 1 and i < #data then
---                table.insert(child, {
---                    provider = " > ",
---                    hl = { fg = 'bright_fg' },
---                })
---            end
---            table.insert(children, child)
---        end
---        -- instantiate the new child, overwriting the previous one
---        self.child = self:new(children, 1)
---    end,
---    -- evaluate the children containing navic components
---    provider = function(self)
---        return self.child:eval()
---    end,
---    hl = { fg = "gray" },
---    update = 'CursorMoved'
---}
 
 local Diagnostics = {
 
@@ -836,7 +584,6 @@ local Diagnostics = {
     },
     {
         provider = function(self)
-            -- 0 is just another output, we can decide to print it or not!
             return self.errors > 0 and (self.error_icon .. self.errors .. " ")
         end,
         hl = { fg = "diag_error" },
@@ -874,14 +621,12 @@ local Git = {
 
     hl = { fg = "orange" },
 
-
-    {   -- git branch name
+    {
         provider = function(self)
-            return " " .. self.status_dict.head
+            return " " .. self.status_dict.head
         end,
         hl = { bold = true }
     },
-    -- You could handle delimiters, icons and counts similar to Diagnostics
     {
         condition = function(self)
             return self.has_changes
@@ -917,26 +662,10 @@ local Git = {
     },
 }
 
-local WorkDir = {
-    provider = function()
-        local icon = (vim.fn.haslocaldir(0) == 1 and "l" or "g") .. " " .. " "
-        local cwd = vim.fn.getcwd(0)
-        cwd = vim.fn.fnamemodify(cwd, ":~")
-        if not conditions.width_percent_below(#cwd, 0.25) then
-            cwd = vim.fn.pathshorten(cwd)
-        end
-        local trail = cwd:sub(-1) == '/' and '' or "/"
-        return icon .. cwd  .. trail
-    end,
-    hl = { fg = "blue", bold = true },
-}
-
 local TerminalName = {
-    -- we could add a condition to check that buftype == 'terminal'
-    -- or we could do that later (see #conditional-statuslines below)
     provider = function()
         local tname, _ = vim.api.nvim_buf_get_name(0):gsub(".*:", "")
-        return " " .. tname
+        return " " .. tname
     end,
     hl = { fg = "blue", bold = true },
 }
@@ -952,66 +681,14 @@ local HelpFileName = {
     hl = { fg = colors.blue },
 }
 
-local Spell = {
-    condition = function()
-        return vim.wo.spell
-    end,
-    provider = 'SPELL ',
-    hl = { bold = true, fg = "orange"}
-}
-
-local SearchCount = {
-    condition = function()
-        return vim.v.hlsearch ~= 0 and vim.o.cmdheight == 0
-    end,
-    init = function(self)
-        local ok, search = pcall(vim.fn.searchcount)
-        if ok and search.total then
-            self.search = search
-        end
-    end,
-    provider = function(self)
-        local search = self.search
-        return string.format("[%d/%d]", search.current, math.min(search.total, search.maxcount))
-    end,
-}
-
-local MacroRec = {
-    condition = function()
-        return vim.fn.reg_recording() ~= "" and vim.o.cmdheight == 0
-    end,
-    provider = " ",
-    hl = { fg = "orange", bold = true },
-    utils.surround({ "[", "]" }, nil, {
-        provider = function()
-            return vim.fn.reg_recording()
-        end,
-        hl = { fg = "green", bold = true },
-    }),
-    update = {
-        "RecordingEnter",
-        "RecordingLeave",
-     }
-}
-
 vim.opt.showcmdloc = 'statusline'
-local ShowCmd = {
-    condition = function()
-        return vim.o.cmdheight == 0
-    end,
-    provider = ":%3.5(%S%)",
-}
 
 local Align = { provider = "%=" }
 local Space = { provider = " " }
 
---ViMode = utils.surround({ "", "" }, "bright_bg", { ViMode, Snippets })
-
 local DefaultStatusline = {
     ViMode, Space, FileNameBlock, Space, Git, Space, Diagnostics, Align,
-    --Navic, DAPMessages, Align,
     Navic, Align,
-    --LSPActive, Space, LSPMessages, Space, UltTest, Space, FileType, Space, Ruler, Space, ScrollBar
     LSPActive, Space, FileType, Space, Ruler, Space, ScrollBar
 }
 
@@ -1039,10 +716,8 @@ local TerminalStatusline = {
 
     hl = { bg = "dark_red" },
 
-    -- Quickly add a condition to the ViMode to only show it when buffer is active!
     { condition = conditions.is_active, ViMode, Space }, FileType, Space, TerminalName, Align,
 }
-
 
 local StatusLines = {
 
@@ -1054,16 +729,12 @@ local StatusLines = {
         end
     end,
 
-    -- the first statusline with no condition, or which condition returns true is used.
-    -- think of it as a switch case with breaks to stop fallthrough.
     fallthrough = false,
 
     SpecialStatusline, TerminalStatusline, InactiveStatusline, DefaultStatusline,
 }
 
 require("heirline").setup({ statusline = StatusLines })
-
-
 
 
 -- neovide configuration
