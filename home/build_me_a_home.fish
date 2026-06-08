@@ -150,6 +150,10 @@ function install_tmux
   sudo apt install tmux
 end
 
+function install_ripgrep
+  sudo apt install ripgrep
+end
+
 
 function build_home
   mkdir -p $USER_BIN_INSTALL_PATH
@@ -168,6 +172,7 @@ function build_home
   install_git
   config_git
   install_tmux
+  install_ripgrep
 
   install_nvim
   setup_nvim
